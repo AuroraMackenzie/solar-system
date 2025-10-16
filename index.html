@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stellar: Enhanced 3D Solar System Simulator</title>
+    
+    <!-- 安全头 -->
+    <meta http-equiv="Content-Security-Policy" 
+          content="default-src 'self'; 
+                   script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; 
+                   style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; 
+                   font-src 'self' https://fonts.gstatic.com; 
+                   media-src 'self'; 
+                   connect-src 'none';
+                   object-src 'none';
+                   base-uri 'self';
+                   form-action 'none';">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
+    <!-- 性能优化 -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- 外部资源 -->
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/renderers/CSS2DRenderer.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <div class="loading-text">INITIALIZING STELLAR SIMULATOR</div>
+        <div class="loading-subtext">Loading celestial bodies and gravitational parameters...</div>
+    </div>
+    
+    <div id="container">
+        <div class="title-bar">
+            <h1>STELLAR</h1>
+            <div class="subtitle">Enhanced 3D Solar System Simulator</div>
+        </div>
+        
+        <div class="time-display">TIME SPEED: <span id="timeValue">1.0</span>x</div>
+        
+        <div class="music-control" id="musicControl">
+            <span id="musicStatus">🔇</span> MUSIC
+        </div>
+        
+        <div class="instructions">
+            <h3>CONTROLS</h3>
+            <ul>
+                <li>Drag: Rotate view</li>
+                <li>Scroll: Zoom in/out</li>
+                <li>Right drag: Pan view</li>
+                <li>Click planets: Show info</li>
+                <li>Reset button: Default view</li>
+                <li>Click music button: Toggle background music</li>
+            </ul>
+        </div>
+        
+        <div class="legend">
+            <h3>PLANET LEGEND</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FFB84D;"></div>
+                <div>Sun</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #B1B1B1;"></div>
+                <div>Mercury</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #F6D7A8;"></div>
+                <div>Venus</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #5DBBFF;"></div>
+                <div>Earth</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FF7B55;"></div>
+                <div>Mars</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #E3C9A6;"></div>
+                <div>Jupiter</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #E2E2A0;"></div>
+                <div>Saturn</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #A6F1F5;"></div>
+                <div>Uranus</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #5B7FFF;"></div>
+                <div>Neptune</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #C2B280;"></div>
+                <div>Pluto</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h2>Time Control</h2>
+                <div class="button-group">
+                    <button id="slower" title="Slower">⏪</button>
+                    <button id="playPause" title="Play/Pause">⏯️</button>
+                    <button id="faster" title="Faster">⏩</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h2>Time Speed</h2>
+                <div class="slider-container">
+                    <span>0.1x</span>
+                    <input type="range" id="timeSlider" min="1" max="200" value="10">
+                    <span id="maxValue">20.0x</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h2>View</h2>
+                <div class="button-group">
+                    <button id="resetCam" title="Reset View">🎯</button>
+                    <button id="toggleOrbits" title="Toggle Orbits">🪐</button>
+                    <button id="toggleLabels" title="Toggle Labels">🔤</button>
+                    <button id="toggleAsteroids" title="Toggle Asteroid Belt">✨</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel" id="infoPanel">
+            <button class="close-btn" id="closePanel">×</button>
+            <div class="panel-header">
+                <div class="planet-color" id="planetColor"></div>
+                <div>
+                    <h2 id="planetName">Planet</h2>
+                    <h3 id="planetType">Click a planet or the Sun</h3>
+                </div>
+            </div>
+            
+            <div class="facts-grid" id="factsGrid">
+                <!-- Facts will be populated here -->
+            </div>
+            
+            <div class="description" id="planetDescription">
+                Click on any celestial body to see detailed information about it.
+            </div>
+        </div>
+        
+        <div class="structure-info">
+            <h3>Solar System Structure</h3>
+            <h4>I. Center</h4>
+            <ul>
+                <li><strong>Sun</strong> - G-type main-sequence star</li>
+            </ul>
+            
+            <h4>II. Inner Solar System</h4>
+            <ul>
+                <li><strong>Terrestrial Planets</strong> - Mercury, Venus, Earth, Mars</li>
+                <li><strong>Asteroid Belt</strong> - Between Mars & Jupiter</li>
+            </ul>
+            
+            <h4>III. Outer Solar System</h4>
+            <ul>
+                <li><strong>Gas Giants</strong> - Jupiter & Saturn</li>
+                <li><strong>Ice Giants</strong> - Uranus & Neptune</li>
+            </ul>
+            
+            <h4>IV. Trans-Neptunian Region</h4>
+            <ul>
+                <li><strong>Kuiper Belt</strong> - Disk-shaped region beyond Neptune</li>
+                <li><strong>Scattered Disc</strong> - Sparsely populated region</li>
+            </ul>
+            
+            <h4>V. Heliosphere</h4>
+            <ul>
+                <li>Region of space dominated by solar wind</li>
+            </ul>
+            
+            <div class="note">
+                Note: Voyager probes have crossed the heliopause into interstellar space
+            </div>
+        </div>
+    </div>
+
+    <!-- 背景音乐 -->
+    <audio id="backgroundMusic" autoplay muted loop>
+        <source src="assets/audio/backgroundMusic.wav" type="audio/wav">
+        您的浏览器不支持音频元素。
+    </audio>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
