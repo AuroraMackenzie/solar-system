@@ -1,6 +1,7 @@
 **English**: 
 
 
+
 Stellar: Enhanced 3D Solar System Simulator
 
 An interactive 3D solar system simulator built using Three.js. 
@@ -30,14 +31,12 @@ Upload the project files to a Web server that supports HTTPS.
 - Safari 12+
 - Edge 79+
 
-5th. License 
-MIT License
-
 
 
 
 
 Chinese: 
+
 
 
 Stellar: Enhanced 3D Solar System Simulator
@@ -79,7 +78,3 @@ TWO 选项2: 传统Web服务器
 - Firefox 65+
 - Safari 12+
 - Edge 79+
-
-5th. 许可证
-
-MIT License
